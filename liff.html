@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sagemaster｜診断結果を受け取る</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0A1A;
+  --accent:#00E0FF;
+  --sub:#FF4D6A;
+  --text:#FFFFFF;
+  --subtext:#B0B0D0;
+  --card-bg:rgba(255,255,255,0.06);
+  --border:rgba(0,224,255,0.2);
+  --btn-gradient:linear-gradient(135deg,#00BFFF,#007FFF);
+}
+body{
+  background:
+    radial-gradient(ellipse at 30% 30%,rgba(0,191,255,0.1) 0%,transparent 60%),
+    radial-gradient(ellipse at 70% 70%,rgba(120,0,255,0.08) 0%,transparent 60%),
+    #0A0A1A;
+  color:var(--text);
+  font-family:'Noto Sans JP',sans-serif;
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+.wrapper{max-width:400px;width:100%;padding:24px 20px;text-align:center}
+
+/* ローディング */
+.loading-state{animation:fadeIn 0.5s ease}
+.spinner-wrap{width:80px;height:80px;margin:0 auto 24px;position:relative}
+.spinner{
+  width:100%;height:100%;border-radius:50%;
+  border:3px solid rgba(0,224,255,0.15);
+  border-top-color:var(--accent);
+  animation:spin 1s linear infinite;
+  position:absolute;
+}
+.spinner-inner{
+  width:60%;height:60%;border-radius:50%;
+  border:3px solid transparent;
+  border-top-color:rgba(255,77,106,0.6);
+  animation:spin 0.7s linear infinite reverse;
+  position:absolute;top:20%;left:20%;
+}
+.loading-title{font-size:17px;font-weight:700;margin-bottom:8px}
+.loading-sub{font-size:13px;color:var(--subtext)}
+
+/* 成功 */
+.success-state{display:none;animation:fadeIn 0.5s ease}
+.check-circle{
+  width:88px;height:88px;border-radius:50%;
+  background:linear-gradient(135deg,#06C755,#02A844);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 24px;
+  animation:checkPop 0.4s ease;
+  box-shadow:0 0 32px rgba(6,199,85,0.4);
+}
+.check-icon{font-size:40px}
+.success-title{font-size:22px;font-weight:900;margin-bottom:12px}
+.success-sub{font-size:14px;color:var(--subtext);line-height:1.8;margin-bottom:24px}
+.line-preview{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:16px;padding:20px;margin-bottom:24px;text-align:left;
+}
+.line-preview-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.line-icon{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,#06C755,#02A844);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.line-name{font-size:13px;font-weight:700}
+.line-preview-text{font-size:12px;color:var(--subtext);line-height:1.8}
+.countdown{font-size:13px;color:var(--subtext)}
+.countdown span{color:var(--accent);font-weight:700}
+
+/* エラー */
+.error-state{display:none;animation:fadeIn 0.5s ease}
+.error-icon{font-size:48px;margin-bottom:16px}
+.error-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--sub)}
+.error-sub{font-size:14px;color:var(--subtext);line-height:1.8;margin-bottom:24px}
+.btn-retry{
+  display:inline-block;padding:14px 28px;
+  background:var(--btn-gradient);border:none;border-radius:10px;
+  color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:15px;font-weight:700;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- ローディング状態 -->
+  <div class="loading-state" id="loading">
+    <div class="spinner-wrap">
+      <div class="spinner"></div>
+      <div class="spinner-inner"></div>
+    </div>
+    <div class="loading-title">診断結果を取得中...</div>
+    <div class="loading-sub">LINEと連携しています</div>
+  </div>
+
+  <!-- 成功状態 -->
+  <div class="success-state" id="success">
+    <div class="check-circle"><div class="check-icon">✓</div></div>
+    <div class="success-title">送信完了！</div>
+    <p class="success-sub">
+      Sagemasterの診断結果と<br>
+      特別案内をLINEに送りました。<br>
+      トーク画面をご確認ください。
+    </p>
+    <div class="line-preview">
+      <div class="line-preview-header">
+        <div class="line-icon">⚡</div>
+        <div class="line-name">Sagemaster</div>
+      </div>
+      <div class="line-preview-text">
+        🤖 AI診断結果をお送りしました。<br>
+        月間潜在利益向上額・年間潜在利益向上額・<br>
+        AI適合度スコアをご確認ください。
+      </div>
+    </div>
+    <p class="countdown">このページは <span id="countdown-num">3</span> 秒後に閉じます</p>
+  </div>
+
+  <!-- エラー状態 -->
+  <div class="error-state" id="error">
+    <div class="error-icon">⚠️</div>
+    <div class="error-title">エラーが発生しました</div>
+    <p class="error-sub" id="error-msg">診断結果の取得に失敗しました。<br>もう一度お試しください。</p>
+    <button class="btn-retry" onclick="init()">再試行する</button>
+  </div>
+
+</div>
+
+<script>
+const LIFF_ID = 'YOUR_LIFF_ID'; // 本番LIFFIDに変更
+const API_BASE = ''; // 本番では https://your-api.onrender.com
+
+function showState(state) {
+  ['loading','success','error'].forEach(s => {
+    document.getElementById(s).style.display = s === state ? 'block' : 'none';
+  });
+}
+
+async function init() {
+  showState('loading');
+
+  try {
+    // LIFF初期化
+    await liff.init({ liffId: LIFF_ID });
+
+    // ログインチェック
+    if (!liff.isLoggedIn()) {
+      liff.login({ redirectUri: location.href });
+      return;
+    }
+
+    // プロフィール取得
+    const profile = await liff.getProfile();
+    const userId = profile.userId;
+
+    // URLパラメータからdiagnosisId取得
+    const params = new URLSearchParams(location.search);
+    const diagnosisId = params.get('diagnosisId');
+
+    if (!diagnosisId) {
+      throw new Error('診断IDが見つかりませんでした');
+    }
+
+    // APIに送信
+    const res = await fetch(`${API_BASE}/api/line-send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, diagnosisId }),
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'APIエラー');
+
+    // 成功表示
+    showState('success');
+    startCountdown();
+
+  } catch(e) {
+    console.error('[LIFF Error]', e);
+    document.getElementById('error-msg').innerHTML =
+      e.message + '<br>もう一度お試しください。';
+    showState('error');
+  }
+}
+
+function startCountdown() {
+  let n = 3;
+  const el = document.getElementById('countdown-num');
+  const timer = setInterval(() => {
+    n--;
+    el.textContent = n;
+    if (n <= 0) {
+      clearInterval(timer);
+      try { liff.closeWindow(); } catch(e) { window.close(); }
+    }
+  }, 1000);
+}
+
+// 起動
+init();
+</script>
+</body>
+</html>

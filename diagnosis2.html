@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sagemaster｜AIトレーディング診断 & デモ予約</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- GA4 (プレースホルダー) -->
+<!-- Meta Pixel (プレースホルダー) -->
+
+<style>
+/* ===== リセット & ベース ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0A1A;
+  --accent:#00E0FF;
+  --sub:#FF4D6A;
+  --text:#FFFFFF;
+  --subtext:#B0B0D0;
+  --card-bg:rgba(255,255,255,0.06);
+  --border:rgba(0,224,255,0.2);
+  --btn-gradient:linear-gradient(135deg,#00BFFF,#007FFF);
+}
+html,body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;line-height:1.6;overflow-x:hidden}
+body{background:
+  radial-gradient(ellipse at 20% 20%,rgba(0,191,255,0.08) 0%,transparent 60%),
+  radial-gradient(ellipse at 80% 80%,rgba(120,0,255,0.07) 0%,transparent 60%),
+  #0A0A1A;}
+
+/* ===== アニメーション ===== */
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.fade-in{animation:fadeIn 0.5s ease both}
+
+/* ===== ユーティリティ ===== */
+.hidden{display:none!important}
+.container{max-width:640px;margin:0 auto;padding:0 20px;width:100%}
+.brand-header{padding:16px 0 8px;text-align:center}
+.brand-logo{font-size:13px;font-weight:700;letter-spacing:3px;color:var(--accent);text-transform:uppercase}
+
+/* ===== ボタン ===== */
+.btn-primary{
+  display:block;width:100%;padding:18px 24px;
+  background:var(--btn-gradient);border:none;border-radius:12px;
+  color:#fff;font-family:'Noto Sans JP',sans-serif;font-size:16px;font-weight:700;
+  cursor:pointer;text-align:center;transition:transform 0.2s,box-shadow 0.2s;
+  box-shadow:0 4px 20px rgba(0,127,255,0.4);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,127,255,0.5)}
+.btn-primary:disabled{opacity:0.5;pointer-events:none}
+.btn-back-slide{
+  background:transparent;border:1px solid rgba(255,255,255,0.15);
+  border-radius:8px;padding:8px 16px;
+  color:var(--subtext);font-family:'Noto Sans JP',sans-serif;font-size:13px;
+  cursor:pointer;transition:all 0.2s;
+}
+.btn-back-slide:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ===== カード ===== */
+.card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:16px;padding:24px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+
+/* ===== トップバー（スライド用） ===== */
+.slide-topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,26,0.9);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);padding:12px 20px;
+}
+.slide-topbar-inner{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.topbar-back{flex-shrink:0}
+.topbar-progress-wrap{flex:1}
+.topbar-progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--subtext);margin-bottom:6px}
+.topbar-progress-bar{height:3px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden}
+.topbar-progress-fill{height:100%;background:var(--btn-gradient);border-radius:3px;transition:width 0.4s}
+
+/* ===== 画面 ===== */
+.phase{min-height:100vh;width:100%}
+
+/* ========================================
+   PHASE 1: クイズ (diagnosis.htmlと同様)
+   ======================================== */
+#phase-quiz{padding:0 0 40px}
+
+.progress-wrap{padding:16px 0 24px}
+.progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.progress-label{font-size:13px;color:var(--subtext)}
+.progress-num{font-size:13px;font-weight:700;color:var(--accent)}
+.progress-bar{height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:var(--btn-gradient);border-radius:4px;transition:width 0.4s}
+
+.question-card{padding:28px}
+.q-number{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--accent);margin-bottom:12px;text-transform:uppercase}
+.q-text{font-size:clamp(17px,4vw,22px);font-weight:700;line-height:1.5;margin-bottom:28px}
+.options-list{display:flex;flex-direction:column;gap:12px}
+.option-btn{
+  display:block;width:100%;padding:16px 20px;text-align:left;
+  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);
+  border-radius:12px;color:var(--text);font-family:'Noto Sans JP',sans-serif;
+  font-size:15px;font-weight:500;cursor:pointer;transition:all 0.2s;
+}
+.option-btn:hover{background:rgba(0,224,255,0.08);border-color:var(--accent)}
+.option-btn.selected{background:rgba(0,224,255,0.12);border-color:var(--accent);color:var(--accent)}
+.quiz-nav{display:flex;gap:12px;margin-top:24px}
+.btn-back-q{
+  padding:14px 20px;background:transparent;border:1px solid rgba(255,255,255,0.2);
+  border-radius:10px;color:var(--subtext);font-family:'Noto Sans JP',sans-serif;
+  font-size:14px;cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.btn-back-q:hover{border-color:var(--accent);color:var(--accent)}
+.btn-next{flex:1}
+
+/* ===== ローディング ===== */
+#phase-loading{
+  display:flex;align-items:center;justify-content:center;min-height:100vh;
+}
+.loading-inner{text-align:center;padding:20px}
+.loading-ring-wrap{width:100px;height:100px;margin:0 auto 28px;position:relative}
+.loading-ring{width:100%;height:100%;border-radius:50%;border:3px solid rgba(0,224,255,0.15);position:absolute}
+.loading-ring-spin{width:100%;height:100%;border-radius:50%;border:3px solid transparent;border-top-color:var(--accent);position:absolute;animation:spin 1.2s linear infinite}
+.loading-ring-spin-2{width:70%;height:70%;top:15%;left:15%;border-radius:50%;border:3px solid transparent;border-top-color:rgba(255,77,106,0.5);position:absolute;animation:spin 0.8s linear infinite reverse}
+.loading-emoji{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:32px}
+.loading-step{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:14px;color:var(--subtext);opacity:0;transition:opacity 0.4s}
+.loading-step.visible{opacity:1;color:var(--text)}
+.loading-step.done{color:var(--accent)}
+.step-dot{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all 0.3s}
+.loading-step.done .step-dot{background:var(--accent);border-color:var(--accent);color:#000}
+.loading-step.visible:not(.done) .step-dot{border-color:var(--accent);color:var(--accent)}
+
+/* ========================================
+   PHASE 2: スライド
+   ======================================== */
+#phase-slides{padding-top:0}
+.slide{display:none;padding:24px 0 60px;animation:fadeIn 0.4s ease}
+.slide.active{display:block}
+
+/* ドットインジケーター */
+.dot-indicator{
+  display:flex;justify-content:center;gap:8px;padding:16px 0 24px;
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);
+  cursor:pointer;transition:all 0.3s;border:none;
+}
+.dot.active{background:var(--accent);width:24px;border-radius:4px}
+.dot.passed{background:rgba(0,224,255,0.4)}
+
+/* スライド共通 */
+.slide-title{font-size:clamp(20px,5vw,26px);font-weight:900;line-height:1.4;margin-bottom:8px}
+.slide-sub{font-size:14px;color:var(--subtext);margin-bottom:24px;line-height:1.8}
+.slide-cta-area{margin-top:32px}
+
+/* ===== Slide 0: 診断結果 ===== */
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.result-item{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:14px;padding:16px;text-align:center;
+}
+.result-item .r-label{font-size:11px;color:var(--subtext);margin-bottom:6px}
+.result-item .r-value{font-size:clamp(18px,4vw,24px);font-weight:900;color:var(--accent);line-height:1.2}
+.result-item.full{grid-column:1/-1}
+.result-score-bar{height:8px;background:rgba(255,255,255,0.08);border-radius:4px;margin-top:10px;overflow:hidden}
+.result-score-fill{height:100%;background:var(--btn-gradient);border-radius:4px;transition:width 1s ease}
+
+/* ===== Slide 1: チャート ===== */
+.chart-wrap{
+  max-width:280px;margin:0 auto 24px;
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:16px;padding:20px;
+}
+.automation-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.automation-item{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  background:var(--card-bg);border:1px solid var(--border);border-radius:10px;
+}
+.automation-icon{font-size:20px;flex-shrink:0}
+.automation-text{font-size:14px}
+
+/* ===== Slide 2: プラン選択 ===== */
+.plan-cards{display:flex;flex-direction:column;gap:16px;margin-bottom:8px}
+@media(min-width:480px){.plan-cards{flex-direction:row}}
+.plan-card{
+  flex:1;padding:24px 20px;
+  background:var(--card-bg);border:2px solid rgba(255,255,255,0.1);
+  border-radius:16px;cursor:pointer;text-align:center;
+  transition:all 0.25s;position:relative;
+  animation:pulse 3s ease infinite;
+}
+.plan-card:hover{border-color:var(--accent);background:rgba(0,224,255,0.08)}
+.plan-card.selected{border-color:var(--accent);background:rgba(0,224,255,0.12);animation:none}
+.plan-selected-badge{
+  display:none;position:absolute;top:-10px;left:50%;transform:translateX(-50%);
+  background:var(--accent);color:#000;font-size:11px;font-weight:700;
+  padding:3px 12px;border-radius:100px;white-space:nowrap;
+}
+.plan-card.selected .plan-selected-badge{display:block}
+.plan-icon{font-size:36px;margin-bottom:12px}
+.plan-name{font-size:17px;font-weight:700;margin-bottom:6px}
+.plan-tagline{font-size:12px;color:var(--subtext);margin-bottom:16px}
+.plan-detail-btn{
+  display:inline-block;padding:8px 20px;
+  background:transparent;border:1px solid var(--accent);
+  border-radius:100px;color:var(--accent);font-family:'Noto Sans JP',sans-serif;
+  font-size:13px;cursor:pointer;transition:all 0.2s;
+}
+.plan-card.selected .plan-detail-btn{background:var(--accent);color:#000}
+.plan-gate-note{text-align:center;font-size:12px;color:var(--subtext);margin-top:8px}
+
+/* ===== Slide 3: プラン概要 ===== */
+.plan-hero-img{
+  width:100%;height:200px;border-radius:16px;object-fit:cover;
+  margin-bottom:20px;background:rgba(0,224,255,0.05);
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--border);font-size:48px;
+}
+.plan-overview-text{font-size:15px;line-height:1.9;color:var(--subtext)}
+
+/* ===== Slide 4: 特徴 ===== */
+.feature-cards{display:flex;flex-direction:column;gap:16px}
+.feature-card{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  display:flex;gap:0;flex-direction:column;
+}
+@media(min-width:480px){.feature-card{flex-direction:row}}
+.feature-img{
+  width:100%;height:140px;background:rgba(0,224,255,0.05);
+  display:flex;align-items:center;justify-content:center;
+  font-size:48px;flex-shrink:0;
+}
+@media(min-width:480px){.feature-img{width:120px;height:auto}}
+.feature-body{padding:16px}
+.feature-title{font-size:15px;font-weight:700;margin-bottom:6px}
+.feature-desc{font-size:13px;color:var(--subtext);line-height:1.8}
+
+/* ===== Slide 5: 導入効果 ===== */
+.effect-highlight{
+  padding:24px;margin-bottom:24px;text-align:center;
+  background:linear-gradient(135deg,rgba(0,191,255,0.1),rgba(120,0,255,0.1));
+  border:1px solid var(--border);border-radius:16px;
+}
+.effect-value{font-size:clamp(28px,7vw,40px);font-weight:900;color:var(--accent);margin-bottom:6px}
+.effect-label{font-size:13px;color:var(--subtext)}
+.steps-list{display:flex;flex-direction:column;gap:0}
+.step-item{
+  display:flex;gap:16px;padding:16px 0;
+  border-bottom:1px solid var(--border);
+}
+.step-item:last-child{border-bottom:none}
+.step-num{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--btn-gradient);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;flex-shrink:0;
+  box-shadow:0 4px 12px rgba(0,127,255,0.4);
+}
+.step-body .step-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.step-body .step-desc{font-size:13px;color:var(--subtext);line-height:1.7}
+
+/* ===== Slide 6: フォーム ===== */
+.selected-plan-preview{
+  display:flex;align-items:center;gap:12px;padding:14px 18px;margin-bottom:24px;
+  background:rgba(0,224,255,0.06);border:1px solid rgba(0,224,255,0.2);
+  border-radius:12px;
+}
+.selected-plan-icon{font-size:28px}
+.selected-plan-info .label{font-size:11px;color:var(--subtext)}
+.selected-plan-info .name{font-size:15px;font-weight:700}
+
+/* カレンダーUI */
+.calendar-section{margin-bottom:28px}
+.calendar-title{font-size:14px;font-weight:700;margin-bottom:12px;color:var(--accent)}
+.calendar-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+.calendar-scroll::-webkit-scrollbar{height:4px}
+.calendar-scroll::-webkit-scrollbar-track{background:rgba(255,255,255,0.05);border-radius:4px}
+.calendar-scroll::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}
+.day-card{flex-shrink:0;min-width:90px;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.day-label{padding:8px 10px;background:rgba(0,0,0,0.3);font-size:11px;font-weight:700;text-align:center;color:var(--subtext);white-space:nowrap}
+.day-slots{display:flex;flex-direction:column;gap:4px;padding:6px}
+.slot-btn{
+  padding:7px 6px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.03);color:var(--subtext);
+  font-family:'Noto Sans JP',sans-serif;font-size:12px;cursor:pointer;
+  text-align:center;transition:all 0.2s;white-space:nowrap;
+}
+.slot-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,224,255,0.08)}
+.slot-btn.selected{border-color:var(--accent);background:rgba(0,224,255,0.15);color:var(--accent);font-weight:700}
+.selected-slot-label{
+  margin-top:10px;padding:10px 16px;
+  background:rgba(0,224,255,0.06);border:1px solid rgba(0,224,255,0.2);
+  border-radius:8px;font-size:13px;color:var(--accent);
+  display:none;
+}
+.calendar-loading{font-size:13px;color:var(--subtext);text-align:center;padding:20px}
+
+/* フォームフィールド */
+.form-group{margin-bottom:20px}
+.form-label{display:block;font-size:13px;font-weight:700;margin-bottom:8px}
+.form-label .req{color:var(--sub);margin-left:4px;font-size:11px}
+.form-input,.form-textarea{
+  width:100%;padding:14px 16px;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);
+  border-radius:10px;color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;
+  transition:border-color 0.2s;outline:none;
+}
+.form-input:focus,.form-textarea:focus{border-color:var(--accent)}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,255,255,0.3)}
+.form-textarea{resize:vertical;min-height:100px}
+.form-error{font-size:12px;color:var(--sub);margin-top:4px;display:none}
+.form-input.invalid,.form-textarea.invalid{border-color:var(--sub)}
+
+/* 送信完了 */
+#submit-success{display:none;text-align:center;padding:40px 20px;animation:fadeIn 0.5s ease}
+.success-check{
+  width:80px;height:80px;border-radius:50%;
+  background:var(--btn-gradient);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;font-size:36px;
+  box-shadow:0 0 40px rgba(0,127,255,0.5);
+}
+.success-title{font-size:22px;font-weight:900;margin-bottom:12px}
+.success-sub{font-size:14px;color:var(--subtext);line-height:1.9;margin-bottom:24px}
+.meet-url-box{
+  background:var(--card-bg);border:1px solid var(--border);
+  border-radius:12px;padding:16px;word-break:break-all;
+  font-size:13px;color:var(--accent);
+}
+
+/* ===== レスポンシブ ===== */
+@media(max-width:480px){
+  .result-grid{grid-template-columns:1fr}
+  .result-item.full{grid-column:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ========================================
+     PHASE 1: クイズ
+     ======================================== -->
+<div id="phase-quiz" class="phase">
+  <div class="container">
+    <div class="brand-header">
+      <div class="brand-logo">⚡ Sagemaster</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">AI適合度を分析中</span>
+        <span class="progress-num" id="q-progress-num">1 / 9</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="q-progress-fill" style="width:11%"></div>
+      </div>
+    </div>
+    <div class="card question-card fade-in" id="question-card">
+      <div class="q-number" id="q-number">Q 01</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options-list" id="options-list"></div>
+    </div>
+    <div class="quiz-nav">
+      <button class="btn-back-q" id="btn-back-q" onclick="qGoBack()" style="visibility:hidden">← 戻る</button>
+      <button class="btn-primary btn-next" id="btn-next-q" onclick="qGoNext()" disabled>次へ →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================
+     LOADING
+     ======================================== -->
+<div id="phase-loading" class="phase hidden">
+  <div class="container">
+    <div class="loading-inner fade-in">
+      <div class="loading-ring-wrap">
+        <div class="loading-ring"></div>
+        <div class="loading-ring-spin"></div>
+        <div class="loading-ring-spin-2"></div>
+        <div class="loading-emoji">🤖</div>
+      </div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px">AIが分析しています...</div>
+      <div style="font-size:14px;color:var(--subtext);margin-bottom:28px">あなた専用のシミュレーションを算出中</div>
+      <div style="text-align:left;display:inline-block">
+        <div class="loading-step" id="ls-0"><div class="step-dot">1</div><span>回答データを受信</span></div>
+        <div class="loading-step" id="ls-1"><div class="step-dot">2</div><span>投資プロファイルを分析</span></div>
+        <div class="loading-step" id="ls-2"><div class="step-dot">3</div><span>AI適合度を判定</span></div>
+        <div class="loading-step" id="ls-3"><div class="step-dot">4</div><span>潜在利益向上額を算出</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================
+     PHASE 2: スライド
+     ======================================== -->
+<div id="phase-slides" class="phase hidden">
+  <!-- トップバー -->
+  <div class="slide-topbar">
+    <div class="slide-topbar-inner">
+      <div class="topbar-back">
+        <button class="btn-back-slide" id="slide-back-btn" onclick="slideBack()">← 戻る</button>
+      </div>
+      <div class="topbar-progress-wrap">
+        <div class="topbar-progress-info">
+          <span id="slide-progress-label">診断結果</span>
+          <span id="slide-progress-frac">1 / 7</span>
+        </div>
+        <div class="topbar-progress-bar">
+          <div class="topbar-progress-fill" id="slide-progress-fill" style="width:14%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ドットインジケーター -->
+  <div class="dot-indicator" id="dot-indicator">
+    <button class="dot active" onclick="dotClick(0)"></button>
+    <button class="dot" onclick="dotClick(1)"></button>
+    <button class="dot" onclick="dotClick(2)"></button>
+    <button class="dot" onclick="dotClick(3)"></button>
+    <button class="dot" onclick="dotClick(4)"></button>
+    <button class="dot" onclick="dotClick(5)"></button>
+    <button class="dot" onclick="dotClick(6)"></button>
+  </div>
+
+  <div class="container">
+
+    <!-- ===== Slide 0: 診断結果 ===== -->
+    <div class="slide active" id="slide-0">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="display:inline-block;padding:6px 16px;background:rgba(0,224,255,0.1);border:1px solid var(--accent);border-radius:100px;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:12px">📊 診断完了</div>
+        <div class="slide-title">あなたの診断結果</div>
+        <div class="slide-sub">Sagemaster導入シミュレーション（ぼかしなし）</div>
+      </div>
+      <div class="result-grid">
+        <div class="result-item">
+          <div class="r-label">💰 月間潜在利益向上額</div>
+          <div class="r-value" id="s0-monthly"></div>
+        </div>
+        <div class="result-item">
+          <div class="r-label">🚀 年間潜在利益向上額</div>
+          <div class="r-value" id="s0-yearly"></div>
+        </div>
+        <div class="result-item">
+          <div class="r-label">⏱ 週間削減時間</div>
+          <div class="r-value" id="s0-time"></div>
+        </div>
+        <div class="result-item">
+          <div class="r-label">📈 利益向上レンジ</div>
+          <div class="r-value" id="s0-range"></div>
+        </div>
+        <div class="result-item full">
+          <div class="r-label">🎯 AI適合度スコア</div>
+          <div class="r-value" id="s0-score"></div>
+          <div class="result-score-bar"><div class="result-score-fill" id="s0-score-bar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div style="padding:16px;background:rgba(0,224,255,0.06);border:1px solid rgba(0,224,255,0.2);border-radius:12px;margin-bottom:24px">
+        <p style="font-size:13px;line-height:1.8" id="s0-label-text"></p>
+      </div>
+      <div class="slide-cta-area">
+        <button class="btn-primary" onclick="slideNext()">Sagemasterのプランを確認する →</button>
+      </div>
+    </div>
+
+    <!-- ===== Slide 1: チャート ===== -->
+    <div class="slide" id="slide-1">
+      <div class="slide-title">利益向上の内訳</div>
+      <div class="slide-sub">AIが自動化する領域と期待できる改善効果</div>
+      <div class="chart-wrap">
+        <canvas id="donut-chart"></canvas>
+      </div>
+      <div class="automation-list">
+        <div class="automation-item">
+          <div class="automation-icon">🧠</div>
+          <div class="automation-text"><strong>感情的取引の排除</strong> — 焦り・欲による損失をゼロに</div>
+        </div>
+        <div class="automation-item">
+          <div class="automation-icon">⏰</div>
+          <div class="automation-text"><strong>分析時間の短縮</strong> — チャート監視をAIが代替</div>
+        </div>
+        <div class="automation-item">
+          <div class="automation-icon">📊</div>
+          <div class="automation-text"><strong>エントリー精度の向上</strong> — ロジックに基づく高再現性</div>
+        </div>
+        <div class="automation-item">
+          <div class="automation-icon">🌙</div>
+          <div class="automation-text"><strong>24時間稼働</strong> — 寝ている間もポジション管理</div>
+        </div>
+      </div>
+      <div class="slide-cta-area">
+        <button class="btn-primary" onclick="slideNext()">この利益向上を実現する方法とは？ →</button>
+      </div>
+    </div>
+
+    <!-- ===== Slide 2: プラン選択 ===== -->
+    <div class="slide" id="slide-2">
+      <div class="slide-title">Sagemasterのプランを選択</div>
+      <div class="slide-sub">あなたのスタイルに合ったプランを選んでください。<br>選択すると詳細をご確認いただけます。</div>
+      <div class="plan-cards">
+        <div class="plan-card" id="plan-card-basic" onclick="selectPlan('basic')">
+          <div class="plan-selected-badge">✓ 選択中</div>
+          <div class="plan-icon">🌱</div>
+          <div class="plan-name">Basic</div>
+          <div class="plan-tagline">〜AIと学ぶ自動化入門〜</div>
+          <button class="plan-detail-btn" onclick="selectPlan('basic');event.stopPropagation()">詳しく見る →</button>
+        </div>
+        <div class="plan-card" id="plan-card-pro" onclick="selectPlan('pro')">
+          <div class="plan-selected-badge">✓ 選択中</div>
+          <div class="plan-icon">🚀</div>
+          <div class="plan-name">Pro</div>
+          <div class="plan-tagline">〜AIを最大活用する本格派〜</div>
+          <button class="plan-detail-btn" onclick="selectPlan('pro');event.stopPropagation()">詳しく見る →</button>
+        </div>
+      </div>
+      <p class="plan-gate-note">※ プランを選択すると詳細に進めます</p>
+    </div>
+
+    <!-- ===== Slide 3: プラン概要 ===== -->
+    <div class="slide" id="slide-3">
+      <div id="s3-hero" class="plan-hero-img">🤖</div>
+      <div class="slide-title" id="s3-name"></div>
+      <p class="plan-overview-text" id="s3-overview"></p>
+      <div class="slide-cta-area">
+        <button class="btn-primary" onclick="slideNext()">3つの強みとは？ →</button>
+      </div>
+    </div>
+
+    <!-- ===== Slide 4: 特徴 ===== -->
+    <div class="slide" id="slide-4">
+      <div class="slide-title" id="s4-title">3つの強み</div>
+      <div class="slide-sub">Sagemasterが選ばれる理由</div>
+      <div class="feature-cards" id="s4-features"></div>
+      <div class="slide-cta-area">
+        <button class="btn-primary" onclick="slideNext()">具体的な導入効果を確認 →</button>
+      </div>
+    </div>
+
+    <!-- ===== Slide 5: 導入効果 ===== -->
+    <div class="slide" id="slide-5">
+      <div class="slide-title">あなたへの導入効果</div>
+      <div class="slide-sub">診断結果をもとにシミュレーションした数値</div>
+      <div class="effect-highlight">
+        <div class="effect-label">年間潜在利益向上額</div>
+        <div class="effect-value" id="s5-yearly"></div>
+        <div class="effect-label" id="s5-effect-note"></div>
+      </div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:16px">Sagemaster導入の4ステップ</div>
+      <div class="steps-list" id="s5-steps"></div>
+      <div class="slide-cta-area">
+        <button class="btn-primary" onclick="slideNext()">🎁 無料デモを予約してAIトレーディングを体験する →</button>
+      </div>
+    </div>
+
+    <!-- ===== Slide 6: フォーム ===== -->
+    <div class="slide" id="slide-6">
+
+      <div id="submit-success">
+        <div class="success-check">✓</div>
+        <div class="success-title">予約が完了しました！</div>
+        <p class="success-sub">
+          ご登録のメールアドレスに<br>
+          確認メールをお送りしました。<br>
+          当日はGoogle Meetでお会いしましょう。
+        </p>
+        <div class="meet-url-box">
+          <div style="font-size:11px;color:var(--subtext);margin-bottom:6px">🎥 Google Meet URL</div>
+          <a id="meet-url-link" href="#" style="color:var(--accent)" target="_blank">（メールをご確認ください）</a>
+        </div>
+      </div>
+
+      <div id="form-area">
+        <div class="selected-plan-preview">
+          <div class="selected-plan-icon" id="f-plan-icon">🚀</div>
+          <div class="selected-plan-info">
+            <div class="label">選択プラン</div>
+            <div class="name" id="f-plan-name">Pro</div>
+          </div>
+        </div>
+
+        <div class="calendar-section">
+          <div class="calendar-title">📅 面談希望日時を選択</div>
+          <div class="calendar-loading" id="calendar-loading">空き枠を取得中...</div>
+          <div id="calendar-ui" style="display:none">
+            <div class="calendar-scroll" id="calendar-scroll"></div>
+            <div class="selected-slot-label" id="selected-slot-label">
+              ✅ 選択中: <span id="selected-slot-text"></span>
+            </div>
+          </div>
+          <input type="hidden" id="f-slot">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">お名前 <span class="req">必須</span></label>
+          <input type="text" class="form-input" id="f-name" placeholder="山田 太郎">
+          <div class="form-error" id="err-name">お名前を入力してください</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">メールアドレス <span class="req">必須</span></label>
+          <input type="email" class="form-input" id="f-email" placeholder="your@email.com">
+          <div class="form-error" id="err-email">有効なメールアドレスを入力してください</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ご質問・ご要望（任意）</label>
+          <textarea class="form-textarea" id="f-free" placeholder="気になることがあればお気軽にどうぞ"></textarea>
+        </div>
+
+        <button class="btn-primary" id="submit-btn" onclick="submitForm()">
+          🎁 無料デモを予約する
+        </button>
+        <p style="text-align:center;font-size:12px;color:var(--subtext);margin-top:12px">
+          ※ 送信後、確認メールをお送りします
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</div><!-- /phase-slides -->
+
+<script>
+// ===== 設定 =====
+const API_BASE = ''; // 本番では https://your-api.onrender.com
+
+// ===== プランデータ =====
+const PLANS = {
+  basic: {
+    name: 'Sagemaster Basic',
+    icon: '🌱',
+    tagline: '〜AIと学ぶ自動化入門〜',
+    heroEmoji: '🌱',
+    overview: `Sagemaster Basicは、AIトレーディングを初めて体験する方に最適なプランです。\n\nシンプルな設定でAIがあなたのトレードをサポート。感情的な判断を排除し、ロジックに基づいた安定したトレードを実現します。まずは「AIを雇う」という感覚を体験してください。`,
+    features: [
+      { emoji: '🎯', title: 'シンプルな自動化', desc: 'AIが基本的なエントリー・エグジットを自動判断。初心者でもすぐに使い始められる設定ガイド付きです。' },
+      { emoji: '📊', title: 'レポート機能', desc: '週次・月次のパフォーマンスレポートを自動生成。数字で成果を確認しながらAIを活用できます。' },
+      { emoji: '💬', title: '専任サポート', desc: '導入後も専任スタッフがチャットでサポート。困ったときにいつでも相談できる安心感があります。' },
+    ],
+    steps: [
+      { title: '無料デモで体験', desc: 'まずはデモ環境でAIトレーディングを体験。リスクなしで仕組みを理解できます。' },
+      { title: 'セットアップ', desc: '専任スタッフがオンラインで設定をサポート。最短1時間で稼働開始できます。' },
+      { title: 'AIが自動稼働', desc: '設定完了後はAIが24時間365日、あなたの代わりに働き続けます。' },
+      { title: '定期レビュー', desc: '月1回のオンラインMTGで成果を確認。改善策を一緒に考えます。' },
+    ],
+    effectNote: '※ AI導入により感情的損失を削減し、機会損失を最小化した試算',
+  },
+  pro: {
+    name: 'Sagemaster Pro',
+    icon: '🚀',
+    tagline: '〜AIを最大活用する本格派〜',
+    heroEmoji: '🚀',
+    overview: `Sagemaster Proは、AIトレーディングを本格的に活用したい方のための最上位プランです。\n\n複数の戦略を組み合わせた高度な自動化と、専属コンサルタントによる個別最適化で、最大限の成果を追求します。時間とメンタルを解放し、真の経済的自由を手に入れましょう。`,
+    features: [
+      { emoji: '⚡', title: '高度なマルチ戦略', desc: '複数のトレード戦略を同時並行で運用。相場の状況に応じてAIが最適な戦略を自動選択します。' },
+      { emoji: '🧠', title: '専属AI最適化', desc: 'あなたのリスク許容度・目標利益に合わせてAIをカスタマイズ。完全にパーソナライズされた運用が可能です。' },
+      { emoji: '👑', title: '専属コンサルタント', desc: '専属のAIトレーディング専門家が戦略立案から改善まで徹底サポート。VIP対応で24時間以内に返答します。' },
+    ],
+    steps: [
+      { title: '個別戦略設計', desc: '専属コンサルタントと1on1で、あなた専用のトレード戦略を設計します。' },
+      { title: 'カスタムセットアップ', desc: '設計した戦略をAIに実装。パラメーター調整まで全て専任チームが担当します。' },
+      { title: 'フルオートで稼働', desc: 'AIが複数戦略を並列運用。あなたは結果を確認するだけでOKです。' },
+      { title: '月次最適化MTG', desc: '月1回以上のレビューMTGで継続的に戦略を改善。常に最高のパフォーマンスを維持します。' },
+    ],
+    effectNote: '※ マルチ戦略運用・個別最適化による試算。個人差があります。',
+  },
+};
+
+// ===== クイズデータ =====
+const QUESTIONS = [
+  { id:'q1', text:'現在の投資・副業スタイルを教えてください', options:['未経験・勉強中','独学で実践中','他サービスを利用中','既に利益を出している'] },
+  { id:'q2', text:'トレード学習に費やせる1日の時間は？', options:['30分未満','1〜2時間','3〜5時間','それ以上'] },
+  { id:'q3', text:'取引中の「感情（焦り・欲）」による損失経験は？', options:['痛感している','時々ある','コントロールできている'] },
+  { id:'q4', text:'あなたが理想とする「副業の形」は？', options:['手間をかけず自動化したい','スキルを磨いて極めたい','リスクを最小限に抑えたい'] },
+  { id:'q5', text:'投資において最も「もったいない」と感じるものは？', options:['溶かした資金','分析に費やす時間','逃したチャンス'] },
+  { id:'q6', text:'現在の生活で「自由」に使える時間の満足度は？', options:['全く足りない','もう少し欲しい','満足している','自由そのもの'] },
+  { id:'q7', text:'「AIを自分の代わりに働かせる」という考え方は？', options:['非常に合理的だと思う','興味はあるが不安','自分でやりたい'] },
+  { id:'q8', text:'あなたが手に入れたい「究極の未来」は？', options:['誰にも依存しない経済的自由','家族や趣味との時間','場所を選ばない働き方'] },
+  { id:'q9', text:'現在のトレード・投資での月間利益の目安は？', options:['まだない／損失中','〜3万円','3〜10万円','10万円以上'] },
+];
+
+// ===== 状態 =====
+let currentQ = 0;
+const answers = {};
+let results = null;
+let selectedPlan = null;
+let currentSlide = 0;
+let donutChart = null;
+const TOTAL_SLIDES = 7;
+
+// ===== UTM保存 =====
+(function(){
+  const p = new URLSearchParams(location.search);
+  ['utm_source','utm_medium','utm_campaign','fbclid','gclid'].forEach(k => {
+    if(p.get(k)){
+      const exp = new Date(Date.now()+30*24*60*60*1000).toUTCString();
+      document.cookie=`${k}=${encodeURIComponent(p.get(k))};expires=${exp};path=/;SameSite=Lax`;
+    }
+  });
+})();
+
+// ===== フェーズ切り替え =====
+function showPhase(id) {
+  ['phase-quiz','phase-loading','phase-slides'].forEach(p => {
+    document.getElementById(p).classList.toggle('hidden', p !== id);
+  });
+  window.scrollTo(0,0);
+}
+
+// ===== クイズ =====
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  document.getElementById('q-number').textContent = `Q ${String(currentQ+1).padStart(2,'0')}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-progress-num').textContent = `${currentQ+1} / ${QUESTIONS.length}`;
+  document.getElementById('q-progress-fill').style.width = `${((currentQ+1)/QUESTIONS.length)*100}%`;
+  document.getElementById('btn-back-q').style.visibility = currentQ===0?'hidden':'visible';
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (answers[q.id]===opt?' selected':'');
+    btn.textContent = opt;
+    btn.addEventListener('click', () => qSelect(opt));
+    list.appendChild(btn);
+  });
+  document.getElementById('btn-next-q').disabled = !answers[q.id];
+
+  const card = document.getElementById('question-card');
+  card.style.animation = 'none';
+  requestAnimationFrame(() => { card.style.animation = 'fadeIn 0.4s ease both'; });
+}
+
+function qSelect(opt) {
+  answers[QUESTIONS[currentQ].id] = opt;
+  document.querySelectorAll('.option-btn').forEach(b => {
+    b.classList.toggle('selected', b.textContent === opt);
+  });
+  document.getElementById('btn-next-q').disabled = false;
+  setTimeout(() => qGoNext(), 300);
+}
+
+function qGoBack() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+function qGoNext() {
+  if (!answers[QUESTIONS[currentQ].id]) return;
+  if (currentQ < QUESTIONS.length - 1) {
+    currentQ++;
+    renderQuestion();
+  } else {
+    startLoading();
+  }
+}
+
+// ===== ローディング =====
+function startLoading() {
+  showPhase('phase-loading');
+  pingServer();
+  [0, 700, 1400, 2100].forEach((d, i) => {
+    setTimeout(() => {
+      document.getElementById(`ls-${i}`).classList.add('visible');
+      if (i > 0) document.getElementById(`ls-${i-1}`).classList.add('done');
+    }, d);
+  });
+  setTimeout(() => {
+    document.getElementById('ls-3').classList.add('done');
+    results = calculateResults(answers);
+    renderSlide0();
+    renderSlide1();
+    showPhase('phase-slides');
+    goToSlide(0);
+  }, 3000);
+}
+
+async function pingServer() {
+  try { await fetch(`${API_BASE}/api/ping`); } catch(e) {}
+}
+
+// ===== 計算 =====
+function calculateResults(ans) {
+  const baseRate = {'未経験・勉強中':0.40,'独学で実践中':0.30,'他サービスを利用中':0.20,'既に利益を出している':0.15}[ans.q1]||0.25;
+  const timeRate = {'30分未満':0.20,'1〜2時間':0.15,'3〜5時間':0.10,'それ以上':0.05}[ans.q2]||0.15;
+  const emotionRate = {'痛感している':0.25,'時々ある':0.15,'コントロールできている':0.05}[ans.q3]||0.15;
+  const aiBonus = {'非常に合理的だと思う':0.20,'興味はあるが不安':0.10,'自分でやりたい':0.05}[ans.q7]||0.10;
+  const styleBonus = {'手間をかけず自動化したい':0.15,'リスクを最小限に抑えたい':0.10,'スキルを磨いて極めたい':0.05}[ans.q4]||0.10;
+  const finalRate = Math.min(Math.max(baseRate+timeRate+emotionRate+aiBonus+styleBonus, 0.20), 1.50);
+
+  const monthlyBase = {'まだない／損失中':20000,'〜3万円':20000,'3〜10万円':65000,'10万円以上':150000}[ans.q9]||20000;
+  let emotionLoss = 0;
+  if (ans.q3==='痛感している') emotionLoss = monthlyBase*0.30;
+  else if (ans.q3==='時々ある') emotionLoss = monthlyBase*0.15;
+  if (ans.q5==='溶かした資金') emotionLoss *= 1.2;
+  else if (ans.q5==='逃したチャンス') emotionLoss *= 1.1;
+
+  const monthlyProfit = Math.round((monthlyBase+emotionLoss)*finalRate);
+  const yearlyProfit = monthlyProfit*12;
+  const weeklyTimeSaved = {'30分未満':3,'1〜2時間':9,'3〜5時間':25,'それ以上':38}[ans.q2]||9;
+
+  const expScore = {'未経験・勉強中':20,'独学で実践中':15,'他サービスを利用中':10,'既に利益を出している':5}[ans.q1]||10;
+  const aiScore = {'非常に合理的だと思う':15,'興味はあるが不安':10,'自分でやりたい':5}[ans.q7]||7;
+  const freqScore = {'それ以上':15,'3〜5時間':10,'1〜2時間':7,'30分未満':5}[ans.q2]||7;
+  const emoScore = {'痛感している':10,'時々ある':5,'コントロールできている':0}[ans.q3]||0;
+  const score = Math.min(Math.max(expScore+aiScore+freqScore+emoScore, 10), 60);
+
+  return { monthlyProfit, yearlyProfit, weeklyTimeSaved, score, finalRate,
+    minRate: Math.round(finalRate*100*0.7), maxRate: Math.round(finalRate*100*1.3) };
+}
+
+// ===== Slide 0 レンダリング =====
+function renderSlide0() {
+  document.getElementById('s0-monthly').textContent = `¥${results.monthlyProfit.toLocaleString()}`;
+  document.getElementById('s0-yearly').textContent = `¥${results.yearlyProfit.toLocaleString()}`;
+  document.getElementById('s0-time').textContent = `約${results.weeklyTimeSaved}時間`;
+  document.getElementById('s0-range').textContent = `+${results.minRate}%〜+${results.maxRate}%`;
+  document.getElementById('s0-score').textContent = `${results.score}点 / 60点`;
+  document.getElementById('s0-score-bar').style.width = `${(results.score/60)*100}%`;
+
+  let label;
+  if (results.score>=50) label='AIを雇うことで、24時間の自由と利益を同時に手にする準備ができています。一人完結の究極の副業スタイルの完成です。';
+  else if (results.score>=30) label='独学の限界を突破するタイミングです。AIをパートナーにすることで、学習時間を利益に変えることができます。';
+  else label='まずはAIという「最強の部下」を持つメリットを体験しましょう。あなたの時間はもっと価値あることに使えるはずです。';
+  document.getElementById('s0-label-text').textContent = label;
+}
+
+// ===== Slide 1 チャート =====
+function renderSlide1() {
+  if (donutChart) { donutChart.destroy(); donutChart = null; }
+  const ctx = document.getElementById('donut-chart').getContext('2d');
+  const emotionPct = Math.round(results.finalRate * 100 * 0.35);
+  const timePct = Math.round(results.finalRate * 100 * 0.30);
+  const accuracyPct = Math.round(results.finalRate * 100 * 0.20);
+  const allDayPct = 100 - emotionPct - timePct - accuracyPct;
+  donutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['感情的損失排除','分析時間削減','精度向上','24時間稼働'],
+      datasets: [{
+        data: [emotionPct, timePct, accuracyPct, allDayPct],
+        backgroundColor: ['#00E0FF','#FF4D6A','#7B61FF','#00C87A'],
+        borderColor: '#0A0A1A',
+        borderWidth: 3,
+      }]
+    },
+    options: {
+      cutout: '65%',
+      plugins: {
+        legend: { position:'bottom', labels:{ color:'#B0B0D0', font:{size:11,family:"'Noto Sans JP'"}, padding:12 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.label}: +${ctx.raw}%` } }
+      }
+    }
+  });
+}
+
+// ===== Slide 3〜5 プラン動的レンダリング =====
+function renderPlanSlides(planKey) {
+  const plan = PLANS[planKey];
+
+  // Slide 3
+  document.getElementById('s3-hero').textContent = plan.heroEmoji;
+  document.getElementById('s3-name').textContent = plan.name;
+  document.getElementById('s3-overview').textContent = plan.overview;
+
+  // Slide 4
+  document.getElementById('s4-title').textContent = `${plan.name} の3つの強み`;
+  const featWrap = document.getElementById('s4-features');
+  featWrap.innerHTML = plan.features.map(f => `
+    <div class="feature-card">
+      <div class="feature-img">${f.emoji}</div>
+      <div class="feature-body">
+        <div class="feature-title">${f.title}</div>
+        <div class="feature-desc">${f.desc}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Slide 5
+  document.getElementById('s5-yearly').textContent = `¥${results.yearlyProfit.toLocaleString()}`;
+  document.getElementById('s5-effect-note').textContent = plan.effectNote;
+  document.getElementById('s5-steps').innerHTML = plan.steps.map((s,i) => `
+    <div class="step-item">
+      <div class="step-num">${i+1}</div>
+      <div class="step-body">
+        <div class="step-title">${s.title}</div>
+        <div class="step-desc">${s.desc}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Slide 6 フォームのプラン表示
+  document.getElementById('f-plan-icon').textContent = plan.icon;
+  document.getElementById('f-plan-name').textContent = plan.name;
+}
+
+// ===== プラン選択 =====
+function selectPlan(planKey) {
+  selectedPlan = planKey;
+  document.getElementById('plan-card-basic').classList.toggle('selected', planKey==='basic');
+  document.getElementById('plan-card-pro').classList.toggle('selected', planKey==='pro');
+  renderPlanSlides(planKey);
+  setTimeout(() => slideNext(), 300);
+}
+
+// ===== スライドナビ =====
+function goToSlide(n) {
+  document.querySelectorAll('.slide').forEach((s,i) => s.classList.toggle('active',i===n));
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((d,i) => {
+    d.classList.toggle('active', i===n);
+    d.classList.toggle('passed', i<n);
+  });
+  const labels = ['診断結果','利益の内訳','プラン選択','プラン概要','3つの強み','導入効果','デモ予約'];
+  document.getElementById('slide-progress-label').textContent = labels[n] || '';
+  document.getElementById('slide-progress-frac').textContent = `${n+1} / ${TOTAL_SLIDES}`;
+  document.getElementById('slide-progress-fill').style.width = `${((n+1)/TOTAL_SLIDES)*100}%`;
+  document.getElementById('slide-back-btn').style.visibility = n===0?'hidden':'visible';
+  currentSlide = n;
+
+  // Slide 6: カレンダー取得
+  if (n===6) loadCalendar();
+  window.scrollTo(0,0);
+}
+
+function slideNext() {
+  // Slide 2（プラン選択）のゲート
+  if (currentSlide===2 && !selectedPlan) {
+    document.getElementById('plan-gate-note')?.scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  if (currentSlide < TOTAL_SLIDES-1) goToSlide(currentSlide+1);
+}
+
+function slideBack() {
+  if (currentSlide > 0) goToSlide(currentSlide-1);
+  else { showPhase('phase-quiz'); renderQuestion(); }
+}
+
+function dotClick(n) {
+  // 進む方向はゲートチェック
+  if (n > currentSlide) {
+    if (currentSlide===2 && !selectedPlan && n>2) return;
+  }
+  if (n <= currentSlide) goToSlide(n);
+}
+
+// ===== カレンダーUI =====
+async function loadCalendar() {
+  if (document.getElementById('calendar-ui').style.display === 'flex') return; // 既に読み込み済
+  try {
+    const res = await fetch(`${API_BASE}/api/slots`);
+    const data = await res.json();
+    renderCalendar(data.slots);
+  } catch(e) {
+    renderCalendar(generateFallbackSlots());
+  }
+}
+
+function generateFallbackSlots() {
+  const slots = [];
+  const now = new Date();
+  for (let d=1; d<=10; d++) {
+    const date = new Date(now);
+    date.setDate(now.getDate()+d);
+    const label = date.toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',weekday:'short'});
+    const daySlots = [];
+    for (let h=11; h<=22; h++) {
+      const s = new Date(date);
+      s.setHours(h,0,0,0);
+      daySlots.push({ iso: s.toISOString(), label: `${h}:00` });
+    }
+    slots.push({ date: label, slots: daySlots });
+  }
+  return slots;
+}
+
+function renderCalendar(slots) {
+  document.getElementById('calendar-loading').style.display = 'none';
+  const ui = document.getElementById('calendar-ui');
+  ui.style.display = 'block';
+  const scroll = document.getElementById('calendar-scroll');
+  scroll.innerHTML = slots.map(day => `
+    <div class="day-card">
+      <div class="day-label">${day.date}</div>
+      <div class="day-slots">
+        ${day.slots.map(s => `
+          <button class="slot-btn" data-iso="${s.iso}" onclick="selectSlot(this,'${s.iso}','${day.date} ${s.label}')">
+            ${s.label}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectSlot(btn, iso, label) {
+  document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('f-slot').value = iso;
+  const slotLabel = document.getElementById('selected-slot-label');
+  document.getElementById('selected-slot-text').textContent = label;
+  slotLabel.style.display = 'block';
+}
+
+// ===== バリデーション =====
+function validateForm() {
+  let valid = true;
+
+  const slot = document.getElementById('f-slot').value;
+  if (!slot) {
+    document.getElementById('calendar-section')?.scrollIntoView({behavior:'smooth'});
+    valid = false;
+  }
+
+  const name = document.getElementById('f-name');
+  const nameErr = document.getElementById('err-name');
+  if (!name.value.trim()) {
+    name.classList.add('invalid');
+    nameErr.style.display = 'block';
+    valid = false;
+  } else {
+    name.classList.remove('invalid');
+    nameErr.style.display = 'none';
+  }
+
+  const email = document.getElementById('f-email');
+  const emailErr = document.getElementById('err-email');
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value);
+  if (!emailOk) {
+    email.classList.add('invalid');
+    emailErr.style.display = 'block';
+    valid = false;
+  } else {
+    email.classList.remove('invalid');
+    emailErr.style.display = 'none';
+  }
+
+  return valid;
+}
+
+// ===== フォーム送信 =====
+async function submitForm() {
+  if (!validateForm()) return;
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = '送信中...';
+
+  // 診断サマリをfreeTextに付与
+  const freeBase = document.getElementById('f-free').value;
+  const summary = `\n\n---診断サマリ---\n選択プラン: ${PLANS[selectedPlan]?.name}\nスコア: ${results.score}点\n月間利益向上額: ¥${results.monthlyProfit.toLocaleString()}\n年間利益向上額: ¥${results.yearlyProfit.toLocaleString()}\n投資スタイル: ${answers.q1}`;
+
+  const payload = {
+    slot: document.getElementById('f-slot').value,
+    contactName: document.getElementById('f-name').value.trim(),
+    email: document.getElementById('f-email').value.trim(),
+    freeText: freeBase + summary,
+    selectedPlan: selectedPlan,
+    score: results.score,
+    monthlyProfit: results.monthlyProfit,
+    yearlyProfit: results.yearlyProfit,
+    investmentExperience: answers.q1,
+    tradingFrequency: answers.q2,
+    emotionalTradingExperience: answers.q3,
+    tradingStyle: answers.q4,
+    aiTradingInterest: answers.q7,
+    investmentGoal: answers.q8,
+  };
+
+  // Meta Pixel
+  try { fbq && fbq('track','Schedule'); } catch(e) {}
+
+  try {
+    const res = await fetch(`${API_BASE}/api/form-submit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    document.getElementById('form-area').style.display = 'none';
+    const succ = document.getElementById('submit-success');
+    succ.style.display = 'block';
+    if (data.meetUrl) {
+      const link = document.getElementById('meet-url-link');
+      link.href = data.meetUrl;
+      link.textContent = data.meetUrl;
+    }
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '🎁 無料デモを予約する';
+    alert('送信に失敗しました。時間をおいて再度お試しください。');
+  }
+}
+
+// ===== 初期化 =====
+renderQuestion();
+</script>
+</body>
+</html>

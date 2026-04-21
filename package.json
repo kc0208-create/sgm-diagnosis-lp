@@ -1,0 +1,24 @@
+{
+  "name": "sgm-diagnosis-api",
+  "version": "1.0.0",
+  "description": "Sagemaster AI Trading Diagnosis LP - Backend API Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "mysql2": "^3.6.2",
+    "googleapis": "^126.0.0",
+    "@line/bot-sdk": "^8.3.0",
+    "nodemailer": "^6.9.7",
+    "axios": "^1.6.2",
+    "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

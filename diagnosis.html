@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sagemaster｜AIトレーディング無料診断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- GA4（本番時にコメントアウト解除してIDを入力）
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+-->
+<!-- Meta Pixel（本番時にコメントアウト解除してIDを入力）
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','YOUR_PIXEL_ID');fbq('track','PageView');</script>
+-->
+
+<style>
+/* ============================================================
+   RESET & ROOT
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0A0A1A;
+  --bg2: #0E0E22;
+  --accent: #00E0FF;
+  --accent-dim: rgba(0,224,255,0.15);
+  --sub: #FF4D6A;
+  --text: #FFFFFF;
+  --subtext: #B0B0D0;
+  --card: rgba(255,255,255,0.05);
+  --card-border: rgba(0,224,255,0.18);
+  --btn: linear-gradient(135deg, #00BFFF 0%, #0070FF 100%);
+  --btn-line: linear-gradient(135deg, #06C755 0%, #029E44 100%);
+  --shadow-blue: 0 8px 32px rgba(0,112,255,0.35);
+  --shadow-green: 0 8px 32px rgba(6,199,85,0.35);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: #0A0A1A;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 15% 15%, rgba(0,191,255,0.07) 0%, transparent 100%),
+    radial-gradient(ellipse 50% 60% at 85% 85%, rgba(100,0,255,0.06) 0%, transparent 100%);
+  color: var(--text);
+  line-height: 1.65;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeUp   { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+@keyframes spin     { to { transform:rotate(360deg); } }
+@keyframes spinRev  { to { transform:rotate(-360deg); } }
+@keyframes pulse    { 0%,100%{opacity:1;} 50%{opacity:.6;} }
+@keyframes glow     { 0%,100%{box-shadow:0 0 8px rgba(0,224,255,0.4);} 50%{box-shadow:0 0 24px rgba(0,224,255,0.8);} }
+@keyframes float    { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+@keyframes stepIn   { from{opacity:0;transform:translateX(-10px);} to{opacity:1;transform:translateX(0);} }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 100%;
+}
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+.screen {
+  display: none;
+  min-height: 100dvh;
+  min-height: 100vh;
+}
+.screen.show { display: block; }
+
+/* ============================================================
+   BRAND BAR
+   ============================================================ */
+.brand-bar {
+  padding: 18px 0 12px;
+  text-align: center;
+}
+.brand-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.brand-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse 2s infinite;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 17px 24px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.18s, box-shadow 0.18s, opacity 0.2s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(0.98); }
+
+.btn-blue { background: var(--btn); color: #fff; box-shadow: var(--shadow-blue); }
+.btn-blue:hover { box-shadow: 0 12px 40px rgba(0,112,255,0.5); }
+
+.btn-line-cta { background: var(--btn-line); color: #fff; box-shadow: var(--shadow-green); }
+.btn-line-cta:hover { box-shadow: 0 12px 40px rgba(6,199,85,0.5); }
+.btn-line-cta:disabled { opacity: 0.45; pointer-events: none; cursor: default; }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.18);
+  color: var(--subtext);
+  font-size: 14px;
+  padding: 12px 20px;
+  width: auto;
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ============================================================
+   SCREEN 1 — START
+   ============================================================ */
+#sc-start {
+  padding-bottom: 48px;
+}
+
+/* Hero */
+.hero { padding: 8px 0 32px; text-align: center; }
+
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: var(--accent-dim);
+  margin-bottom: 22px;
+  animation: fadeUp 0.5s ease both;
+}
+
+/* AIビジュアル */
+.ai-orb {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 28px;
+  position: relative;
+  animation: float 4s ease-in-out infinite;
+}
+.orb-core {
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, rgba(0,224,255,0.25), rgba(0,80,180,0.1));
+  border: 1px solid rgba(0,224,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  backdrop-filter: blur(8px);
+}
+.orb-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,224,255,0.35);
+  border-top-color: transparent;
+  animation: spin 5s linear infinite;
+}
+.orb-ring2 {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,77,106,0.3);
+  border-bottom-color: transparent;
+  animation: spinRev 3.5s linear infinite;
+}
+.orb-dot {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  top: 4px; left: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+.hero-title {
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 900;
+  line-height: 1.35;
+  margin-bottom: 14px;
+  animation: fadeUp 0.5s 0.1s ease both;
+}
+.hero-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+.hero-sub {
+  font-size: 14px;
+  color: var(--subtext);
+  line-height: 1.85;
+  margin-bottom: 28px;
+  animation: fadeUp 0.5s 0.15s ease both;
+}
+.hero-sub strong { color: var(--text); }
+
+.feat-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+  animation: fadeUp 0.5s 0.2s ease both;
+}
+.feat-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 13px;
+  border-radius: 100px;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--subtext);
+}
+.feat-chip .ic { color: var(--accent); font-size: 13px; }
+
+.start-btn-wrap { animation: fadeUp 0.5s 0.25s ease both; }
+
+/* ============================================================
+   SCREEN 2 — QUIZ
+   ============================================================ */
+#sc-quiz { padding-bottom: 40px; }
+
+/* プログレス */
+.prog-bar-wrap { padding: 16px 0 24px; }
+.prog-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 9px;
+}
+.prog-label { font-size: 12px; color: var(--subtext); }
+.prog-count { font-size: 12px; font-weight: 700; color: var(--accent); }
+.prog-track {
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: var(--btn);
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* 質問カード */
+.q-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 26px 22px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.q-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.q-text {
+  font-size: clamp(16px, 4vw, 20px);
+  font-weight: 700;
+  line-height: 1.55;
+  margin-bottom: 24px;
+}
+
+/* 選択肢 */
+.opts { display: flex; flex-direction: column; gap: 10px; }
+.opt {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 11px;
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  position: relative;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+.opt::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,224,255,0.06);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.opt:hover { border-color: rgba(0,224,255,0.5); }
+.opt:hover::after { opacity: 1; }
+.opt.sel {
+  background: rgba(0,224,255,0.1);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+.opt.sel::before {
+  content: '✓';
+  float: right;
+  font-size: 13px;
+}
+
+/* ナビ */
+.q-nav {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  align-items: center;
+}
+.q-next {
+  flex: 1;
+  padding: 15px;
+  font-size: 15px;
+}
+
+/* ============================================================
+   SCREEN 3 — LOADING
+   ============================================================ */
+/* display は .screen / .screen.show に任せる。内側のラッパーでセンタリング */
+.loading-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+.loading-box { text-align: center; padding: 24px; }
+
+/* 回転リング */
+.spinner-wrap {
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 32px;
+  position: relative;
+}
+.sp-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(0,224,255,0.1);
+}
+.sp-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--accent);
+  animation: spin 1.1s linear infinite;
+}
+.sp-ring2 {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: rgba(255,77,106,0.55);
+  animation: spinRev 0.75s linear infinite;
+}
+.sp-inner {
+  position: absolute;
+  inset: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,224,255,0.12);
+}
+.sp-emoji {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 34px;
+  line-height: 1;
+}
+
+.ld-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.ld-sub { font-size: 13px; color: var(--subtext); margin-bottom: 28px; }
+
+.ld-steps { text-align: left; display: inline-block; }
+.ld-step {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 0;
+  font-size: 14px;
+  color: var(--subtext);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
+.ld-step.vis { opacity: 1; color: var(--text); }
+.ld-step.done { color: var(--accent); }
+.ld-step.done .sd::before { content: '✓'; }
+.sd {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+.ld-step.vis:not(.done) .sd { border-color: var(--accent); color: var(--accent); }
+.ld-step.done .sd { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
+
+/* ============================================================
+   SCREEN 4 — RESULT
+   ============================================================ */
+#sc-result { padding-bottom: 60px; }
+
+/* ヘッダー */
+.res-header {
+  text-align: center;
+  padding: 24px 0 28px;
+}
+.res-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.res-title {
+  font-size: clamp(22px, 5vw, 30px);
+  font-weight: 900;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+.res-sub { font-size: 13px; color: var(--subtext); }
+
+/* 見える情報 */
+.visible-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.vis-card {
+  flex: 1;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 13px;
+  padding: 14px 16px;
+}
+.vis-card .vc-label { font-size: 11px; color: var(--subtext); margin-bottom: 4px; }
+.vis-card .vc-val { font-size: 14px; font-weight: 700; }
+
+/* スコア常時表示カード */
+.score-visible-card {
+  background: linear-gradient(135deg, rgba(0,224,255,0.08), rgba(0,112,255,0.06));
+  border: 1px solid rgba(0,224,255,0.3);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.svc-left { flex-shrink: 0; text-align: center; min-width: 80px; }
+.svc-label { font-size: 11px; color: var(--subtext); margin-bottom: 4px; }
+.svc-val {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+.svc-denom {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--subtext);
+  letter-spacing: 0;
+  margin-left: 2px;
+}
+.svc-bar-wrap { flex: 1; }
+.svc-bar-track {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.svc-bar-fill {
+  height: 100%;
+  background: var(--btn);
+  border-radius: 6px;
+  transition: width 1s ease;
+}
+.svc-msg { font-size: 11px; color: var(--subtext); line-height: 1.6; }
+
+/* ぼかしグリッド */
+.blur-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.bc { /* blur card */
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.bc-wide { grid-column: 1 / -1; }
+.bc-label {
+  font-size: 11px;
+  color: var(--subtext);
+  margin-bottom: 7px;
+  line-height: 1.4;
+}
+.bc-val {
+  font-size: clamp(20px, 5vw, 28px);
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--accent);
+  user-select: none;
+  pointer-events: none;
+  display: block;
+}
+/* ぼかし強度 */
+.blur-xl  { filter: blur(14px); }
+.blur-lg  { filter: blur(11px); }
+.blur-md  { filter: blur(8px);  }
+
+/* ロックオーバーレイ */
+.bc-lock {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* 解除ヒント */
+.unlock-hint {
+  background: linear-gradient(135deg, rgba(255,77,106,0.07), rgba(255,77,106,0.03));
+  border: 1px solid rgba(255,77,106,0.25);
+  border-radius: 13px;
+  padding: 14px 18px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.unlock-hint p { font-size: 13px; line-height: 1.75; color: var(--subtext); }
+.unlock-hint strong { color: var(--sub); }
+
+/* スコアコメント */
+.score-msg {
+  background: rgba(0,224,255,0.05);
+  border: 1px solid rgba(0,224,255,0.15);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 13px 13px 0;
+  padding: 16px 18px;
+  margin-bottom: 28px;
+}
+.score-msg .sm-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+.score-msg p { font-size: 14px; line-height: 1.85; }
+
+/* セパレーター */
+.sep {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--card-border), transparent);
+  margin: 28px 0;
+}
+
+/* 比較表 */
+.comp-title {
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 14px;
+}
+.comp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 28px;
+}
+.comp-table th, .comp-table td {
+  padding: 10px 9px;
+  border: 1px solid var(--card-border);
+  text-align: left;
+  vertical-align: top;
+}
+.comp-table thead th {
+  background: rgba(0,0,0,0.25);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--subtext);
+}
+.comp-table thead th:last-child { color: var(--accent); }
+.comp-table tbody tr:nth-child(odd) { background: rgba(255,255,255,0.015); }
+.comp-table .item { font-size: 11px; color: rgba(255,255,255,0.4); }
+.comp-table .bad { color: rgba(255,100,120,0.75); }
+.comp-table .good { color: var(--accent); font-weight: 600; }
+
+/* 自由ビジュアル */
+.freedom-card {
+  background: linear-gradient(135deg, rgba(0,191,255,0.07) 0%, rgba(100,0,255,0.06) 100%);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  padding: 28px 22px;
+  text-align: center;
+  margin-bottom: 28px;
+}
+.freedom-icons { font-size: 28px; letter-spacing: 4px; margin-bottom: 14px; line-height: 1.6; }
+.freedom-title { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+.freedom-body { font-size: 13px; color: var(--subtext); line-height: 1.9; }
+
+/* LINEボタンセクション */
+.line-section { }
+.line-lead {
+  text-align: center;
+  font-size: 13px;
+  color: var(--subtext);
+  margin-bottom: 14px;
+}
+.line-lead strong { color: var(--text); }
+
+.line-features {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.line-feat {
+  font-size: 11px;
+  background: rgba(6,199,85,0.08);
+  border: 1px solid rgba(6,199,85,0.2);
+  border-radius: 100px;
+  padding: 4px 10px;
+  color: #4DE88A;
+}
+
+.line-note {
+  text-align: center;
+  font-size: 11px;
+  color: var(--subtext);
+  margin-top: 10px;
+}
+
+/* LINE SVGアイコン */
+.line-ico {
+  width: 26px; height: 26px;
+  flex-shrink: 0;
+}
+
+/* QRコードエリア（PC） */
+.qr-area {
+  display: none;
+  margin-top: 20px;
+  text-align: center;
+}
+.qr-box {
+  display: inline-block;
+  padding: 12px;
+  background: #fff;
+  border-radius: 12px;
+}
+.qr-box canvas { display: block; border-radius: 4px; }
+.qr-caption {
+  font-size: 11px;
+  color: var(--subtext);
+  margin-top: 8px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 380px) {
+  .blur-grid { grid-template-columns: 1fr; }
+  .bc-wide { grid-column: auto; }
+  .visible-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     SCREEN 1: スタート
+     ================================================================ -->
+<section id="sc-start" class="screen show">
+  <div class="wrap">
+    <div class="brand-bar">
+      <div class="brand-name">
+        <div class="brand-dot"></div>
+        Sagemaster
+        <div class="brand-dot"></div>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="tag-pill">🤖 AI Trading Diagnosis</div>
+
+      <div class="ai-orb">
+        <div class="orb-ring"></div>
+        <div class="orb-ring2"></div>
+        <div class="orb-core">🧠</div>
+        <div class="orb-dot"></div>
+      </div>
+
+      <h1 class="hero-title">
+        AIが<em>あなた専用</em>の<br>
+        トレード戦略を診断
+      </h1>
+      <p class="hero-sub">
+        9問に答えるだけで、Sagemaster導入による<br>
+        <strong>潜在的な利益向上額</strong>と<strong>時間削減効果</strong>を<br>
+        あなた専用に算出します。
+      </p>
+
+      <div class="feat-row">
+        <div class="feat-chip"><span class="ic">⏱</span>90秒で完了</div>
+        <div class="feat-chip"><span class="ic">🎁</span>完全無料</div>
+        <div class="feat-chip"><span class="ic">📊</span>その場で表示</div>
+      </div>
+
+      <div class="start-btn-wrap">
+        <button class="btn btn-blue" onclick="startDiag()">
+          🚀&nbsp;&nbsp;無料でAI診断をスタート
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SCREEN 2: クイズ
+     ================================================================ -->
+<section id="sc-quiz" class="screen">
+  <div class="wrap">
+    <div class="brand-bar">
+      <div class="brand-name">
+        <div class="brand-dot"></div>Sagemaster<div class="brand-dot"></div>
+      </div>
+    </div>
+
+    <div class="prog-bar-wrap">
+      <div class="prog-meta">
+        <span class="prog-label">AI適合度を分析中</span>
+        <span class="prog-count" id="progCount">1 / 9</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" id="progFill" style="width:11%"></div>
+      </div>
+    </div>
+
+    <div class="q-card" id="qCard">
+      <div class="q-badge" id="qBadge">Q 01</div>
+      <div class="q-text"  id="qText"></div>
+      <div class="opts"    id="qOpts"></div>
+    </div>
+
+    <div class="q-nav">
+      <button class="btn btn-ghost" id="btnBack" onclick="goBack()" style="visibility:hidden">← 戻る</button>
+      <button class="btn btn-blue  q-next" id="btnNext" onclick="goNext()" disabled>次へ →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================
+     SCREEN 3: ローディング
+     ================================================================ -->
+<section id="sc-loading" class="screen">
+  <div class="loading-center">
+  <div class="loading-box">
+    <div class="spinner-wrap">
+      <div class="sp-track"></div>
+      <div class="sp-ring"></div>
+      <div class="sp-ring2"></div>
+      <div class="sp-inner"></div>
+      <div class="sp-emoji">🤖</div>
+    </div>
+
+    <div class="ld-title">AIが分析しています…</div>
+    <div class="ld-sub">あなたの投資プロファイルを算出中</div>
+
+    <div class="ld-steps">
+      <div class="ld-step" id="ls0"><div class="sd">1</div><span>回答データを受信</span></div>
+      <div class="ld-step" id="ls1"><div class="sd">2</div><span>投資プロファイルを分析</span></div>
+      <div class="ld-step" id="ls2"><div class="sd">3</div><span>AI適合度を判定</span></div>
+      <div class="ld-step" id="ls3"><div class="sd">4</div><span>潜在利益向上額を算出</span></div>
+    </div>
+  </div>
+  </div><!-- /loading-center -->
+</section>
+
+<!-- ================================================================
+     SCREEN 4: 結果
+     ================================================================ -->
+<section id="sc-result" class="screen">
+  <div class="wrap">
+    <div class="brand-bar">
+      <div class="brand-name">
+        <div class="brand-dot"></div>Sagemaster<div class="brand-dot"></div>
+      </div>
+    </div>
+
+    <!-- ヘッダー -->
+    <div class="res-header">
+      <div class="res-eyebrow">📊 診断完了</div>
+      <h2 class="res-title">あなたの診断結果が<br>出ました</h2>
+      <p class="res-sub">Sagemaster導入によるシミュレーション</p>
+    </div>
+
+    <!-- 見える情報（ぼかしなし） -->
+    <div class="visible-row">
+      <div class="vis-card">
+        <div class="vc-label">📋 現在の投資スタイル</div>
+        <div class="vc-val" id="rStyle">—</div>
+      </div>
+      <div class="vis-card">
+        <div class="vc-label">⏰ 1日の学習時間</div>
+        <div class="vc-val" id="rTime">—</div>
+      </div>
+    </div>
+
+    <!-- スコア（常時表示） -->
+    <div class="score-visible-card">
+      <div class="svc-left">
+        <div class="svc-label">🎯 AI適合度スコア</div>
+        <div class="svc-val"><span id="rScore">0</span><span class="svc-denom">/60</span></div>
+      </div>
+      <div class="svc-bar-wrap">
+        <div class="svc-bar-track">
+          <div class="svc-bar-fill" id="rScoreBar" style="width:0%"></div>
+        </div>
+        <div class="svc-msg" id="rScoreTag"></div>
+      </div>
+    </div>
+
+    <!-- ぼかし結果 -->
+    <div class="blur-grid">
+      <div class="bc">
+        <div class="bc-label">💰 月間潜在<br>利益向上額</div>
+        <span class="bc-val blur-xl" id="rMonthly">¥▮▮▮,▮▮▮</span>
+        <div class="bc-lock">🔒</div>
+      </div>
+      <div class="bc">
+        <div class="bc-label">🚀 年間潜在<br>利益向上額</div>
+        <span class="bc-val blur-lg" id="rYearly">¥▮▮▮▮,▮▮▮</span>
+        <div class="bc-lock">🔒</div>
+      </div>
+      <div class="bc">
+        <div class="bc-label">⏱ 週間<br>削減時間</div>
+        <span class="bc-val blur-md" id="rSaved">▮▮時間</span>
+        <div class="bc-lock">🔒</div>
+      </div>
+      <div class="bc bc-wide">
+        <div class="bc-label">📈 利益向上レンジ</div>
+        <span class="bc-val blur-md" id="rRange">+▮▮% 〜 +▮▮▮%</span>
+        <div class="bc-lock">🔒</div>
+      </div>
+    </div>
+
+    <!-- 解除ヒント -->
+    <div class="unlock-hint">
+      <p>🔒 数字がぼかされています<br>
+        <strong>LINEで全診断結果を受け取る</strong>と<br>
+        全ての数値をそのまま確認できます
+      </p>
+    </div>
+
+    <!-- スコアコメント -->
+    <div class="score-msg">
+      <div class="sm-tag">💬 AIからのメッセージ</div>
+      <p id="rMsgText"></p>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- 比較表 -->
+    <div class="comp-title">独力 vs ⚡ Sagemaster</div>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>項目</th>
+          <th>独力でのトレード勉強</th>
+          <th>⚡ Sagemaster</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="item">学習コスト</td>
+          <td class="bad">数百〜数千時間<br>（終わりがない）</td>
+          <td class="good">0時間<br>（導入即稼働）</td>
+        </tr>
+        <tr>
+          <td class="item">メンタル負荷</td>
+          <td class="bad">常にストレスと<br>隣り合わせ</td>
+          <td class="good">0<br>（感情を持たない鉄の意志）</td>
+        </tr>
+        <tr>
+          <td class="item">稼働時間</td>
+          <td class="bad">画面に<br>張り付く必要あり</td>
+          <td class="good">24時間365日<br>（寝ている間も）</td>
+        </tr>
+        <tr>
+          <td class="item">再現性</td>
+          <td class="bad">個人の才能に<br>依存する</td>
+          <td class="good">ロジックに基づく<br>高い再現性</td>
+        </tr>
+        <tr>
+          <td class="item">ライフスタイル</td>
+          <td class="bad">トレード中心<br>の生活</td>
+          <td class="good">自由を最優先<br>する生活</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 自由ビジュアル -->
+    <div class="freedom-card">
+      <div class="freedom-icons">🌏 ✈️ 🏖️ 💻 🏡</div>
+      <div class="freedom-title">一人完結で手に入る自由</div>
+      <p class="freedom-body">
+        場所も時間も選ばない。AIが24時間働き続けることで、<br>
+        あなたは本当に大切なことに集中できる。<br>
+        それがSagemasterが実現するライフスタイルです。
+      </p>
+    </div>
+
+    <div class="sep"></div>
+
+    <!-- LINEボタン -->
+    <div class="line-section">
+      <p class="line-lead">
+        ↓ 今すぐ<strong>全ての診断結果</strong>を受け取る
+      </p>
+      <div class="line-features">
+        <span class="line-feat">✓ ぼかしなし</span>
+        <span class="line-feat">✓ 無料</span>
+        <span class="line-feat">✓ 即時受信</span>
+      </div>
+      <a id="lineBtn" class="btn btn-line-cta" href="#" disabled>
+        <svg class="line-ico" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="20" fill="white"/>
+          <path d="M33 18.7C33 12.8 27.3 8 20.3 8 13.2 8 7.5 12.8 7.5 18.7c0 5.3 4.7 9.7 11 10.5l.6 2.7c.1.4.6.5.9.2l3.1-2.6C29 28.9 33 24.2 33 18.7z" fill="#06C755"/>
+          <rect x="13" y="17" width="14" height="1.5" rx=".75" fill="white"/>
+          <rect x="13" y="20.5" width="14" height="1.5" rx=".75" fill="white"/>
+        </svg>
+        LINEで全診断結果を受け取る
+      </a>
+      <p class="line-note">友だち追加後、すぐにトーク画面に届きます</p>
+
+      <!-- PC用QRコード -->
+      <div class="qr-area" id="qrArea">
+        <p style="font-size:12px;color:var(--subtext);margin-bottom:10px">
+          📱 スマホのLINEアプリでQRコードを読み取る
+        </p>
+        <div class="qr-box" id="qrBox"></div>
+        <p class="qr-caption">LINE → カメラ → QRコード読み取り</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- QRコードライブラリ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+/* ================================================================
+   設定（本番デプロイ時に変更）
+   ================================================================ */
+const CFG = {
+  apiBase : '',                // 例: 'https://your-api.onrender.com'
+  liffId  : 'YOUR_LIFF_ID',   // LINE DeveloperコンソールのLIFF ID
+};
+
+/* ================================================================
+   質問データ
+   ================================================================ */
+const QS = [
+  { id:'q1', text:'現在の投資・副業スタイルを教えてください',
+    opts:['未経験・勉強中','独学で実践中','他サービスを利用中','既に利益を出している'] },
+  { id:'q2', text:'「トレード学習」に費やせる1日の時間は？',
+    opts:['30分未満','1〜2時間','3〜5時間','それ以上'] },
+  { id:'q3', text:'取引中の「感情（焦り・欲）」による損失経験は？',
+    opts:['痛感している','時々ある','コントロールできている'] },
+  { id:'q4', text:'あなたが理想とする「副業の形」は？',
+    opts:['手間をかけず自動化したい','スキルを磨いて極めたい','リスクを最小限に抑えたい'] },
+  { id:'q5', text:'投資において最も「もったいない」と感じるものは？',
+    opts:['溶かした資金','分析に費やす時間','逃したチャンス'] },
+  { id:'q6', text:'現在の生活で「自由」に使える時間の満足度は？',
+    opts:['全く足りない','もう少し欲しい','満足している','自由そのもの'] },
+  { id:'q7', text:'「AIを自分の代わりに働かせる」という考え方は？',
+    opts:['非常に合理的だと思う','興味はあるが不安','自分でやりたい'] },
+  { id:'q8', text:'あなたが手に入れたい「究極の未来」は？',
+    opts:['誰にも依存しない経済的自由','家族や趣味との時間','場所を選ばない働き方'] },
+  { id:'q9', text:'現在のトレード・投資での月間利益の目安は？',
+    opts:['まだない／損失中','〜3万円','3〜10万円','10万円以上'] },
+];
+
+/* ================================================================
+   状態
+   ================================================================ */
+let qi     = 0;            // 現在の質問インデックス
+const ans  = {};           // 回答
+let result = null;         // 計算結果
+let dId    = null;         // 診断ID（APIから返却）
+let qrInst = null;         // QRCodeインスタンス
+
+/* ================================================================
+   UTMパラメータ → Cookie保存（30日）
+   ================================================================ */
+/* スコアカウントアップアニメーション */
+function animateCount(elId, target, duration) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    el.textContent = Math.round(ease * target);
+    if (t < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  };
+  requestAnimationFrame(step);
+}
+
+(function saveCookies() {
+  const p = new URLSearchParams(location.search);
+  ['utm_source','utm_medium','utm_campaign','fbclid','gclid'].forEach(k => {
+    const v = p.get(k);
+    if (v) {
+      const exp = new Date(Date.now() + 30*24*3600*1000).toUTCString();
+      document.cookie = `${k}=${encodeURIComponent(v)};expires=${exp};path=/;SameSite=Lax`;
+    }
+  });
+})();
+
+/* ================================================================
+   画面切り替え
+   ================================================================ */
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('show'));
+  document.getElementById(id).classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+/* ================================================================
+   スタート
+   ================================================================ */
+function startDiag() {
+  qi = 0;
+  Object.keys(ans).forEach(k => delete ans[k]);
+  show('sc-quiz');
+  renderQ();
+}
+
+/* ================================================================
+   質問レンダリング
+   ================================================================ */
+function renderQ() {
+  const q = QS[qi];
+  const total = QS.length;
+  const num   = String(qi + 1).padStart(2, '0');
+
+  document.getElementById('qBadge').textContent = `Q ${num}`;
+  document.getElementById('qText').textContent  = q.text;
+  document.getElementById('progCount').textContent = `${qi + 1} / ${total}`;
+  document.getElementById('progFill').style.width  = `${((qi + 1) / total) * 100}%`;
+  document.getElementById('btnBack').style.visibility = qi === 0 ? 'hidden' : 'visible';
+  document.getElementById('btnNext').disabled = !ans[q.id];
+
+  const ul = document.getElementById('qOpts');
+  ul.innerHTML = '';
+  q.opts.forEach(txt => {
+    const b = document.createElement('button');
+    b.className = 'opt' + (ans[q.id] === txt ? ' sel' : '');
+    b.textContent = txt;
+    b.onclick = () => pick(txt);
+    ul.appendChild(b);
+  });
+
+  // カードfadeリセット
+  const c = document.getElementById('qCard');
+  c.style.animation = 'none';
+  requestAnimationFrame(() => { c.style.animation = 'fadeUp 0.35s ease both'; });
+}
+
+function pick(txt) {
+  ans[QS[qi].id] = txt;
+  document.querySelectorAll('.opt').forEach(b =>
+    b.classList.toggle('sel', b.textContent === txt)
+  );
+  document.getElementById('btnNext').disabled = false;
+  setTimeout(goNext, 280);
+}
+
+function goBack() {
+  if (qi > 0) { qi--; renderQ(); }
+  else show('sc-start');
+}
+
+function goNext() {
+  if (!ans[QS[qi].id]) return;
+  if (qi < QS.length - 1) { qi++; renderQ(); }
+  else startLoading();
+}
+
+/* ================================================================
+   ローディング（3秒 + ステップフェードイン）
+   ================================================================ */
+function startLoading() {
+  show('sc-loading');
+  pingServer();                     // サーバーウォームアップ
+
+  // 4ステップを順番にフェードイン
+  const delays = [0, 750, 1500, 2250];
+  delays.forEach((d, i) => {
+    setTimeout(() => {
+      document.getElementById(`ls${i}`).classList.add('vis');
+      if (i > 0) document.getElementById(`ls${i-1}`).classList.add('done');
+    }, d);
+  });
+
+  setTimeout(() => {
+    document.getElementById('ls3').classList.add('done');
+    result = calc(ans);
+    renderResult(result);
+    saveToApi(result);       // 非同期でAPI保存→LINEボタン活性化
+  }, 3100);
+}
+
+async function pingServer() {
+  try { await fetch(`${CFG.apiBase}/api/ping`); } catch(_) {}
+}
+
+/* ================================================================
+   計算ロジック
+   ================================================================ */
+function calc(a) {
+  const base =
+    { '未経験・勉強中':0.40, '独学で実践中':0.30,
+      '他サービスを利用中':0.20, '既に利益を出している':0.15 }[a.q1] ?? 0.25;
+
+  const timeR =
+    { '30分未満':0.20, '1〜2時間':0.15, '3〜5時間':0.10, 'それ以上':0.05 }[a.q2] ?? 0.15;
+
+  const emoR =
+    { '痛感している':0.25, '時々ある':0.15, 'コントロールできている':0.05 }[a.q3] ?? 0.15;
+
+  const aiB =
+    { '非常に合理的だと思う':0.20, '興味はあるが不安':0.10, '自分でやりたい':0.05 }[a.q7] ?? 0.10;
+
+  const styleB =
+    { '手間をかけず自動化したい':0.15, 'リスクを最小限に抑えたい':0.10,
+      'スキルを磨いて極めたい':0.05 }[a.q4] ?? 0.10;
+
+  const rate = Math.min(Math.max(base + timeR + emoR + aiB + styleB, 0.20), 1.50);
+
+  const baseProfit =
+    { 'まだない／損失中':20000, '〜3万円':20000, '3〜10万円':65000, '10万円以上':150000 }[a.q9] ?? 20000;
+
+  let emoLoss = 0;
+  if      (a.q3 === '痛感している') emoLoss = baseProfit * 0.30;
+  else if (a.q3 === '時々ある')     emoLoss = baseProfit * 0.15;
+  if      (a.q5 === '溶かした資金') emoLoss *= 1.2;
+  else if (a.q5 === '逃したチャンス') emoLoss *= 1.1;
+
+  const monthly = Math.round((baseProfit + emoLoss) * rate);
+  const yearly  = monthly * 12;
+  const saved   = { '30分未満':3, '1〜2時間':9, '3〜5時間':25, 'それ以上':38 }[a.q2] ?? 9;
+
+  const expSc  = { '未経験・勉強中':20, '独学で実践中':15, '他サービスを利用中':10, '既に利益を出している':5 }[a.q1] ?? 10;
+  const aiSc   = { '非常に合理的だと思う':15, '興味はあるが不安':10, '自分でやりたい':5 }[a.q7] ?? 7;
+  const freqSc = { 'それ以上':15, '3〜5時間':10, '1〜2時間':7, '30分未満':5 }[a.q2] ?? 7;
+  const emoSc  = { '痛感している':10, '時々ある':5, 'コントロールできている':0 }[a.q3] ?? 0;
+  const score  = Math.min(Math.max(expSc + aiSc + freqSc + emoSc, 10), 60);
+
+  return {
+    monthly, yearly, saved, score, rate,
+    minR: Math.round(rate * 100 * 0.7),
+    maxR: Math.round(rate * 100 * 1.3),
+  };
+}
+
+/* ================================================================
+   結果レンダリング
+   ================================================================ */
+function renderResult(r) {
+  // ぼかし値（CSSのblurで隠れる）
+  document.getElementById('rMonthly').textContent = `¥${r.monthly.toLocaleString()}`;
+  document.getElementById('rYearly').textContent  = `¥${r.yearly.toLocaleString()}`;
+  document.getElementById('rSaved').textContent   = `約${r.saved}時間`;
+  document.getElementById('rRange').textContent   = `+${r.minR}% 〜 +${r.maxR}%`;
+
+  // 見える情報
+  document.getElementById('rStyle').textContent = ans.q1;
+  document.getElementById('rTime').textContent  = ans.q2;
+
+  // スコア（常時表示）— カウントアップアニメーション
+  animateCount('rScore', r.score, 900);
+  // バーは少し遅らせてアニメーション
+  setTimeout(() => {
+    document.getElementById('rScoreBar').style.width = `${(r.score / 60) * 100}%`;
+  }, 80);
+  let scoreTag;
+  if      (r.score >= 50) scoreTag = '🔥 導入準備：完璧です';
+  else if (r.score >= 30) scoreTag = '⚡ 独学の限界を突破するタイミング';
+  else                    scoreTag = '💡 AIの強みを体験するチャンス';
+  document.getElementById('rScoreTag').textContent = scoreTag;
+
+  // スコアメッセージ
+  let msg;
+  if      (r.score >= 50) msg = 'AIを雇うことで、24時間の自由と利益を同時に手にする準備ができています。一人完結の究極の副業スタイルの完成です。';
+  else if (r.score >= 30) msg = '独学の限界を突破するタイミングです。AIをパートナーにすることで、学習時間を利益に変えることができます。';
+  else                    msg = 'まずはAIという「最強の部下」を持つメリットを体験しましょう。あなたの時間はもっと価値あることに使えるはずです。';
+  document.getElementById('rMsgText').textContent = msg;
+
+  show('sc-result');
+}
+
+/* ================================================================
+   API保存 → LINEボタン活性化
+   ================================================================ */
+async function saveToApi(r) {
+  let id = 'offline-' + Date.now();
+  try {
+    const res = await fetch(`${CFG.apiBase}/api/diagnosis`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers: ans, results: r }),
+    });
+    const data = await res.json();
+    if (data.success) id = data.diagnosisId;
+  } catch(_) {
+    // オフラインでも続行
+  }
+  dId = id;
+  activateLineBtn(id);
+}
+
+/* ================================================================
+   LINEボタン & QRコード
+   ================================================================ */
+function activateLineBtn(id) {
+  const url = `https://liff.line.me/${CFG.liffId}?diagnosisId=${encodeURIComponent(id)}`;
+  const btn  = document.getElementById('lineBtn');
+  btn.href   = url;
+  btn.removeAttribute('disabled');
+  btn.classList.remove('btn-line-cta');   // 一度外して
+  btn.classList.add('btn-line-cta');      // 再適用でリペイント
+
+  const isMobile = /iPhone|Android|iPad|iPod|Mobile/i.test(navigator.userAgent);
+  if (!isMobile) {
+    const area = document.getElementById('qrArea');
+    area.style.display = 'block';
+    const box = document.getElementById('qrBox');
+    try {
+      if (qrInst) { qrInst.clear(); qrInst.makeCode(url); }
+      else {
+        qrInst = new QRCode(box, {
+          text: url,
+          width: 180, height: 180,
+          colorDark: '#0070FF',
+          colorLight: '#FFFFFF',
+          correctLevel: QRCode.CorrectLevel.M,
+        });
+      }
+    } catch(e) { console.warn('QR error:', e); }
+  }
+}
+</script>
+</body>
+</html>
