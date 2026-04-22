@@ -6,7 +6,15 @@ const { v4: uuidv4 } = require('uuid');
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
+app.use(express.static('.', {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
+}));
 
 // ルートアクセス → diagnosis.html にリダイレクト
 app.get('/', (req, res) => res.redirect('/diagnosis.html'));
