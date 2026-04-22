@@ -1278,35 +1278,27 @@ function renderResult(r) {
 }
 
 /* ================================================================
-   API保存 → LINEボタン活性化
+   エルメ流入経路URL（スコア2段階）
    ================================================================ */
-async function saveToApi(r) {
-  let id = 'offline-' + Date.now();
-  try {
-    const res = await fetch(`${CFG.apiBase}/api/diagnosis`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ answers: ans, results: r }),
-    });
-    const data = await res.json();
-    if (data.success) id = data.diagnosisId;
-  } catch(_) {
-    // オフラインでも続行
-  }
-  dId = id;
-  activateLineBtn(id);
+const ELME_URLS = {
+  low  : 'https://s.lmes.jp/landing-qr/2007953848-GyLQgK7x?uLand=hfWgxy', // 10〜35点
+  high : 'https://s.lmes.jp/landing-qr/2007953848-GyLQgK7x?uLand=Em5yLq', // 36〜60点
+};
+
+function getElmeUrl(score) {
+  return score >= 36 ? ELME_URLS.high : ELME_URLS.low;
 }
 
 /* ================================================================
-   LINEボタン & QRコード
+   LINEボタン活性化（エルメ流入経路方式）
    ================================================================ */
-function activateLineBtn(id) {
-  const url = `https://liff.line.me/${CFG.liffId}?diagnosisId=${encodeURIComponent(id)}`;
+function activateLineBtn(score) {
+  const url = getElmeUrl(score);
   const btn  = document.getElementById('lineBtn');
   btn.href   = url;
   btn.removeAttribute('disabled');
-  btn.classList.remove('btn-line-cta');   // 一度外して
-  btn.classList.add('btn-line-cta');      // 再適用でリペイント
+  btn.classList.remove('btn-line-cta');
+  btn.classList.add('btn-line-cta');
 
   const isMobile = /iPhone|Android|iPad|iPod|Mobile/i.test(navigator.userAgent);
   if (!isMobile) {
@@ -1326,6 +1318,23 @@ function activateLineBtn(id) {
       }
     } catch(e) { console.warn('QR error:', e); }
   }
+}
+
+/* ================================================================
+   結果保存（API）& LINEボタン活性化
+   ================================================================ */
+async function saveToApi(r) {
+  // LINEボタンはスコアで即時活性化（API待ち不要）
+  activateLineBtn(r.score);
+
+  // バックグラウンドでAPIに保存（失敗しても問題なし）
+  try {
+    await fetch(`${CFG.apiBase}/api/diagnosis`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers: ans, results: r }),
+    });
+  } catch(_) {}
 }
 </script>
 </body>
