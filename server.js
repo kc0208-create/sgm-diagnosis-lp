@@ -8,6 +8,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
 
+// ルートアクセス → diagnosis.html にリダイレクト
+app.get('/', (req, res) => res.redirect('/diagnosis.html'));
+
 const PORT = process.env.PORT || 3000;
 
 // ===== 環境変数チェック =====
