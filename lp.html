@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sagemaster | AIが、あなたの資産をプロのように運用。</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: #fff;
+    color: #1a1a1a;
+    min-height: 100vh;
+  }
+  .wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+  .logo {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #888;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .catch {
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1.4;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .catch span { color: #2563EB; }
+  .sub {
+    font-size: 14px;
+    color: #555;
+    text-align: center;
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+  .pains {
+    background: #F7F8FA;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 28px;
+  }
+  .pains-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 0.08em;
+    margin-bottom: 14px;
+  }
+  .pain-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+  }
+  .pain-item:last-child { margin-bottom: 0; }
+  .pain-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .solution {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .solution-label {
+    display: inline-block;
+    background: #EFF6FF;
+    color: #2563EB;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 100px;
+    margin-bottom: 12px;
+  }
+  .solution-text {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.6;
+    color: #1a1a1a;
+  }
+  .solution-text em { font-style: normal; color: #2563EB; }
+  .divider {
+    text-align: center;
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 20px;
+  }
+  .line-btn {
+    display: block;
+    background: #06C755;
+    color: #fff;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 14px;
+    padding: 20px 16px;
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 20px rgba(6,199,85,0.35);
+    margin-bottom: 12px;
+  }
+  .line-btn:active { opacity: 0.9; }
+  .line-btn-sub {
+    font-size: 13px;
+    font-weight: 400;
+    opacity: 0.85;
+    display: block;
+    margin-top: 4px;
+  }
+  .note {
+    text-align: center;
+    font-size: 11px;
+    color: #aaa;
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+  .features {
+    border-top: 1px solid #F0F0F0;
+    padding-top: 28px;
+    margin-bottom: 28px;
+  }
+  .features-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #888;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .feature-icon {
+    width: 36px;
+    height: 36px;
+    background: #EFF6FF;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .feature-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .feature-text span {
+    font-size: 12px;
+    color: #666;
+    line-height: 1.5;
+  }
+  .final-cta {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+  }
+  .disclaimer {
+    font-size: 10px;
+    color: #bbb;
+    text-align: center;
+    line-height: 1.7;
+    margin-top: 32px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="logo">SAGEMASTER</div>
+
+  <h1 class="catch">頑張ってるのに、<br><span>増えない。</span></h1>
+  <p class="sub">その悩み、あなただけじゃないです。<br>AIが解決する方法があります。</p>
+
+  <div class="pains">
+    <div class="pains-title">こんな悩みはありませんか？</div>
+    <div class="pain-item">
+      <span class="pain-icon">😔</span>
+      <span>いつ売買すればいいか、いつも迷う</span>
+    </div>
+    <div class="pain-item">
+      <span class="pain-icon">📉</span>
+      <span>含み損が膨らんで、損切りできない</span>
+    </div>
+    <div class="pain-item">
+      <span class="pain-icon">⏰</span>
+      <span>仕事や家事で、投資に時間が取れない</span>
+    </div>
+    <div class="pain-item">
+      <span class="pain-icon">😤</span>
+      <span>感情でトレードして、いつも後悔する</span>
+    </div>
+  </div>
+
+  <div class="solution">
+    <span class="solution-label">Sagemasterの解決策</span>
+    <p class="solution-text">その判断、<br><em>AIに任せてください。</em><br>あなたは結果を受け取るだけ。</p>
+  </div>
+
+  <div class="divider">まずは無料で話を聞いてみてください</div>
+
+  <a class="line-btn" href="https://liff.line.me/2007953848-l3eKz6Gk?calendar_salon_id=20452&ts=1778998014">
+    LINEで無料相談を予約する
+    <span class="line-btn-sub">友だち追加 → すぐに予約できます</span>
+  </a>
+
+  <p class="note">※ 完全無料です　※ 勧誘・押し売りは一切しません</p>
+
+  <div class="features">
+    <div class="features-title">Sagemasterが選ばれる理由</div>
+    <div class="feature-item">
+      <div class="feature-icon">🤖</div>
+      <div class="feature-text">
+        <strong>AIが24時間相場を分析</strong>
+        <span>感情ゼロ、ロジックだけで動く</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🛡️</div>
+      <div class="feature-text">
+        <strong>リスクを抑えた自動運用</strong>
+        <span>張り付かなくていい。生活は変えなくていい</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">📊</div>
+      <div class="feature-text">
+        <strong>感情に左右されない合理的な投資</strong>
+        <span>損切りも利確もAIが判断する</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="final-cta">まず話だけでも聞いてみてください</p>
+
+  <a class="line-btn" href="https://liff.line.me/2007953848-l3eKz6Gk?calendar_salon_id=20452&ts=1778998014">
+    LINEで無料相談を予約する
+    <span class="line-btn-sub">友だち追加 → すぐに予約できます</span>
+  </a>
+
+  <p class="disclaimer">
+    本ページの情報は教育目的で提供されており、投資助言ではありません。<br>
+    投資にはリスクが伴います。意思決定は自己責任でお願いします。
+  </p>
+
+</div>
+</body>
+</html>
